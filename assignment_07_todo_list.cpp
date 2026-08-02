@@ -80,3 +80,119 @@
 #include <string>
 using namespace std;
 
+// Prints the main menu.
+void showMenu() {
+    cout << "============================" << endl;
+    cout << "     TO-DO LIST MENU" << endl;
+    cout << "============================" << endl;
+    cout << "1. Add task" << endl;
+    cout << "2. View tasks" << endl;
+    cout << "3. Delete task" << endl;
+    cout << "4. Quit" << endl;
+}
+ 
+// Prompts the user for a task description and adds it to the tasks vector.
+// "tasks" is passed by reference (&) so this function modifies the
+// original vector in main(), not a copy of it.
+void addTask(vector<string>& tasks) {
+    cout << "Enter task: ";
+    string description;
+    getline(cin, description);
+ 
+    if (description.empty()) {
+        cout << "Task cannot be empty. Nothing was added." << endl;
+        return;
+    }
+ 
+    tasks.push_back(description);
+    cout << "Task added: \"" << description << "\"" << endl;
+}
+ 
+// Displays all tasks, numbered starting at 1. If there are no tasks,
+// prints a friendly message instead.
+void viewTasks(const vector<string>& tasks) {
+    if (tasks.empty()) {
+        cout << "Your task list is empty. Add a task to get started!" << endl;
+        return;
+    }
+ 
+    cout << "Your Tasks:" << endl;
+    for (size_t i = 0; i < tasks.size(); i++) {
+        cout << (i + 1) << ". " << tasks[i] << endl;
+    }
+}
+ 
+// Shows the current tasks, asks which one to delete by number, and
+// removes it. Prints an error message if the number is invalid.
+void deleteTask(vector<string>& tasks) {
+    if (tasks.empty()) {
+        cout << "Your task list is empty. Nothing to delete." << endl;
+        return;
+    }
+ 
+    viewTasks(tasks);
+ 
+    cout << "Enter task number to delete: ";
+    int taskNumber;
+    cin >> taskNumber;
+    cin.ignore(); // discard the leftover newline so future getline() calls work
+ 
+    if (cin.fail()) {
+        cout << "Please enter a valid task number." << endl;
+        cin.clear();
+        cin.ignore(10000, '\n'); // clear the bad input from the buffer
+        return;
+    }
+ 
+    // Task numbers shown to the user start at 1, but vector positions
+    // (indices) start at 0, so we subtract 1 to find the right item.
+    int index = taskNumber - 1;
+ 
+    if (index < 0 || index >= static_cast<int>(tasks.size())) {
+        cout << "Error: that task number does not exist." << endl;
+        return;
+    }
+ 
+    string removedTask = tasks[index];
+    tasks.erase(tasks.begin() + index);
+    cout << "Task \"" << removedTask << "\" has been removed." << endl;
+}
+ 
+int main() {
+    vector<string> tasks; // dynamic list that stores all task descriptions
+ 
+    // Keep showing the menu until the user chooses to quit.
+    while (true) {
+        showMenu();
+        cout << "Enter your choice (1-4): ";
+ 
+        int choice;
+        cin >> choice;
+        cin.ignore(); // discard the leftover newline before any getline() calls
+ 
+        if (cin.fail()) {
+            cout << "Invalid choice. Please enter a number from 1 to 4." << endl;
+            cin.clear();
+            cin.ignore(10000, '\n'); // clear the bad input from the buffer
+            cout << endl;
+            continue;
+        }
+ 
+        if (choice == 1) {
+            addTask(tasks);
+        } else if (choice == 2) {
+            viewTasks(tasks);
+        } else if (choice == 3) {
+            deleteTask(tasks);
+        } else if (choice == 4) {
+            cout << "Goodbye!" << endl;
+            break; // exits the while loop, ending the program
+        } else {
+            cout << "Invalid choice. Please enter a number from 1 to 4." << endl;
+        }
+ 
+        cout << endl; // blank line for readability before the menu repeats
+    }
+ 
+    return 0;
+}

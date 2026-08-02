@@ -51,3 +51,87 @@
 #include <iostream>
 using namespace std;
 
+// -----------------------------------------------------------------------------
+// PART A — Print the first N terms
+// -----------------------------------------------------------------------------
+// Prints the first n Fibonacci numbers on one line, separated by spaces.
+void printFibonacciTerms(int n) {
+    int a = 0;
+    int b = 1;
+ 
+    cout << "Fibonacci sequence: ";
+    for (int i = 0; i < n; i++) {
+        cout << a;
+        if (i != n - 1) {
+            cout << " ";
+        }
+ 
+        // Slide the two "tracking" values forward, using a temporary
+        // variable since C++ doesn't support Python's tuple swapping.
+        int next = a + b;
+        a = b;
+        b = next;
+    }
+    cout << endl;
+}
+ 
+// -----------------------------------------------------------------------------
+// PART B — Check membership
+// -----------------------------------------------------------------------------
+// Returns true if "number" appears in the Fibonacci sequence, false otherwise.
+bool isFibonacciNumber(int number) {
+    // Negative numbers are never part of the sequence.
+    if (number < 0) {
+        return false;
+    }
+ 
+    int a = 0;
+    int b = 1;
+ 
+    // Generate Fibonacci numbers, stopping once we reach or pass the target.
+    while (a < number) {
+        int next = a + b;
+        a = b;
+        b = next;
+    }
+ 
+    // After the loop, "a" is either equal to the number (found it)
+    // or has jumped past it (not a Fibonacci number).
+    return a == number;
+}
+ 
+int main() {
+    // -------------------------------------------------------------------
+    // PART A — Print the first N terms
+    // -------------------------------------------------------------------
+    int n;
+    cout << "How many terms? ";
+    cin >> n;
+ 
+    if (cin.fail() || n <= 0) {
+        cout << "Error: N must be a positive integer." << endl;
+        return 1;
+    }
+ 
+    printFibonacciTerms(n);
+ 
+    // -------------------------------------------------------------------
+    // PART B — Check if a number belongs to the sequence
+    // -------------------------------------------------------------------
+    int number;
+    cout << "Enter a number to check: ";
+    cin >> number;
+ 
+    if (cin.fail()) {
+        cout << "Please enter a valid whole number." << endl;
+        return 1;
+    }
+ 
+    if (isFibonacciNumber(number)) {
+        cout << number << " is a Fibonacci number." << endl;
+    } else {
+        cout << number << " is NOT a Fibonacci number." << endl;
+    }
+ 
+    return 0;
+}

@@ -37,3 +37,55 @@
 #include <iostream>
 using namespace std;
 
+// Returns true if n is a prime number, false otherwise.
+bool isPrime(int n) {
+    // Numbers less than 2 are never prime.
+    if (n < 2) {
+        return false;
+    }
+ 
+    // 2 is the only even prime number.
+    if (n == 2) {
+        return true;
+    }
+ 
+    // No other even number can be prime.
+    if (n % 2 == 0) {
+        return false;
+    }
+ 
+    // Check odd divisors up to the square root of n.
+    // If n has a factor larger than its square root, it must also have
+    // a corresponding factor smaller than the square root, so checking
+    // up to sqrt(n) is enough.
+    for (int divisor = 3; divisor * divisor <= n; divisor += 2) {
+        if (n % divisor == 0) {
+            return false;
+        }
+    }
+ 
+    return true;
+}
+ 
+int main() {
+    int number;
+ 
+    cout << "Enter a number: ";
+    cin >> number;
+ 
+    // Basic protection against non-numeric input, so the program
+    // doesn't loop forever or behave unpredictably.
+    if (cin.fail()) {
+        cout << "Please enter a valid whole number." << endl;
+        return 1;
+    }
+ 
+    // Call the function and print the result.
+    if (isPrime(number)) {
+        cout << number << " is a prime number." << endl;
+    } else {
+        cout << number << " is NOT a prime number." << endl;
+    }
+ 
+    return 0;
+}

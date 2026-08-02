@@ -83,3 +83,192 @@
 #include <iomanip>
 using namespace std;
 
+// A struct groups related data together under one name, similar to a
+// Python dictionary but with fixed, named fields declared up front.
+struct Student {
+    string name;
+    int id;
+    vector<double> scores;
+};
+ 
+// Prints the main menu.
+void showMenu() {
+    cout << "================================" << endl;
+    cout << "   STUDENT RECORD SYSTEM MENU" << endl;
+    cout << "================================" << endl;
+    cout << "1. Add student" << endl;
+    cout << "2. Display all students" << endl;
+    cout << "3. Calculate average score" << endl;
+    cout << "4. Quit" << endl;
+}
+ 
+// Returns the average of a list of scores. Returns 0 if the list is
+// empty (avoids dividing by zero).
+double calculateAverage(const vector<double>& scores) {
+    if (scores.empty()) {
+        return 0.0;
+    }
+ 
+    double sum = 0.0;
+    for (double score : scores) {
+        sum += score;
+    }
+    return sum / scores.size();
+}
+ 
+// Prompts the user for a student's name, ID, and scores, then adds the
+// new Student record to the students vector.
+void addStudent(vector<Student>& students) {
+    Student newStudent;
+ 
+    cout << "Student name: ";
+    getline(cin, newStudent.name);
+ 
+    cout << "Student ID: ";
+    cin >> newStudent.id;
+    if (cin.fail()) {
+        cout << "Invalid ID. Student was not added." << endl;
+        cin.clear();
+        cin.ignore(10000, '\n');
+        return;
+    }
+ 
+    cout << "How many scores? ";
+    int numScores;
+    cin >> numScores;
+    if (cin.fail() || numScores < 0) {
+        cout << "Invalid number of scores. Student was not added." << endl;
+        cin.clear();
+        cin.ignore(10000, '\n');
+        return;
+    }
+ 
+    for (int i = 1; i <= numScores; i++) {
+        cout << "Enter score " << i << ": ";
+        double score;
+        cin >> score;
+        if (cin.fail()) {
+            cout << "Invalid score entered. Student was not added." << endl;
+            cin.clear();
+            cin.ignore(10000, '\n');
+            return;
+        }
+        newStudent.scores.push_back(score);
+    }
+ 
+    cin.ignore(); // discard leftover newline before any future getline() calls
+ 
+    students.push_back(newStudent);
+    cout << "Student \"" << newStudent.name << "\" added successfully." << endl;
+}
+ 
+// Prints a formatted table of all students: name, ID, scores, and
+// average score.
+void displayAllStudents(const vector<Student>& students) {
+    if (students.empty()) {
+        cout << "No students have been added yet." << endl;
+        return;
+    }
+ 
+    cout << string(50, '-') << endl;
+    cout << left << setw(15) << "Name"
+         << setw(12) << "ID"
+         << setw(18) << "Scores"
+         << "Average" << endl;
+    cout << string(50, '-') << endl;
+ 
+    for (const Student& student : students) {
+        // Build the "78, 85, 90" style scores string.
+        string scoresText;
+        for (size_t i = 0; i < student.scores.size(); i++) {
+            if (i != 0) {
+                scoresText += ", ";
+            }
+            scoresText += to_string(static_cast<int>(student.scores[i]));
+        }
+ 
+        double average = calculateAverage(student.scores);
+ 
+        cout << left << setw(15) << student.name
+             << setw(12) << student.id
+             << setw(18) << scoresText
+             << fixed << setprecision(2) << average << endl;
+    }
+ 
+    cout << string(50, '-') << endl;
+}
+ 
+// Searches the students vector for a record matching the given ID.
+// Returns a pointer to the matching Student, or nullptr if not found.
+Student* findStudentById(vector<Student>& students, int studentId) {
+    for (size_t i = 0; i < students.size(); i++) {
+        if (students[i].id == studentId) {
+            return &students[i];
+        }
+    }
+    return nullptr;
+}
+ 
+// Asks for a student ID, looks up that student, and prints their
+// average score. Prints an error message if the ID is not found.
+void showAverageForStudent(vector<Student>& students) {
+    cout << "Enter student ID: ";
+    int studentId;
+    cin >> studentId;
+ 
+    if (cin.fail()) {
+        cout << "Invalid ID format." << endl;
+        cin.clear();
+        cin.ignore(10000, '\n');
+        return;
+    }
+ 
+    Student* student = findStudentById(students, studentId);
+ 
+    if (student == nullptr) {
+        cout << "Error: no student found with ID " << studentId << "." << endl;
+        return;
+    }
+ 
+    double average = calculateAverage(student->scores);
+    cout << student->name << "'s average score: "
+         << fixed << setprecision(2) << average << endl;
+}
+ 
+int main() {
+    vector<Student> students; // dynamic list of all student records
+ 
+    while (true) {
+        showMenu();
+        cout << "Enter your choice (1-4): ";
+ 
+        int choice;
+        cin >> choice;
+ 
+        if (cin.fail()) {
+            cout << "Invalid choice. Please enter a number from 1 to 4." << endl;
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << endl;
+            continue;
+        }
+ 
+        if (choice == 1) {
+            cin.ignore(); // discard leftover newline before getline() in addStudent
+            addStudent(students);
+        } else if (choice == 2) {
+            displayAllStudents(students);
+        } else if (choice == 3) {
+            showAverageForStudent(students);
+        } else if (choice == 4) {
+            cout << "Goodbye!" << endl;
+            break;
+        } else {
+            cout << "Invalid choice. Please enter a number from 1 to 4." << endl;
+        }
+ 
+        cout << endl;
+    }
+ 
+    return 0;
+}
